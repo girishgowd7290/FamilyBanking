@@ -1,15 +1,18 @@
 "use client"
 
-import { useFinanceStore } from '@/hooks/use-finance-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { EXPENSE_CATEGORIES } from '@/types';
+import { EXPENSE_CATEGORIES, Transaction } from '@/types';
 import { Wallet, TrendingDown, TrendingUp } from 'lucide-react';
 
 const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB'];
 
-export function Overview() {
-    const { transactions } = useFinanceStore();
+interface OverviewProps {
+    transactions: Transaction[];
+}
+
+export function Overview({ transactions }: OverviewProps) {
+    // const { transactions } = useFinanceStore(); // Removed
 
     const totalIncome = transactions
         .filter(t => t.type === 'income')

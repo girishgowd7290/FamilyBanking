@@ -1,12 +1,16 @@
-"use client"
-
 import { Overview } from '@/components/dashboard/overview';
 import { TransactionForm } from '@/components/forms/transaction-form';
 import { TodoList } from '@/components/forms/todo-list';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 import { PiggyBank } from 'lucide-react';
+import { getTransactions, getTodos } from '@/app/actions';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const transactions = await getTransactions();
+  const todos = await getTodos();
+
   return (
     <main className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -22,19 +26,19 @@ export default function Home() {
         </div>
 
         {/* Top Section: Overview Charts */}
-        <Overview />
+        <Overview transactions={transactions} />
 
         {/* Bottom Section: Two Columns */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Actions */}
           <div className="space-y-8 lg:col-span-1">
             <TransactionForm />
-            <TodoList />
+            <TodoList initialTodos={todos} />
           </div>
 
           {/* Right Column: History */}
           <div className="lg:col-span-2">
-            <RecentTransactions />
+            <RecentTransactions transactions={transactions} />
           </div>
         </div>
       </div>

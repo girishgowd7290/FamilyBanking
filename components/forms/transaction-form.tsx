@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from 'react';
-import { useFinanceStore } from '@/hooks/use-finance-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,21 +12,23 @@ import { CalendarIcon, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CATEGORIES, TransactionType, Category } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { addTransaction } from '@/app/actions';
+import { useRouter } from 'next/navigation';
 
 export function TransactionForm() {
-    const { addTransaction } = useFinanceStore();
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
     const [type, setType] = useState<TransactionType>('expense');
     const [category, setCategory] = useState<Category>('Groceries');
     const [date, setDate] = useState<Date>(new Date());
     const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!amount || !description) return;
 
-        addTransaction({
+        await addTransaction({
             amount: parseFloat(amount),
             description,
             type,
@@ -38,6 +39,7 @@ export function TransactionForm() {
         setAmount('');
         setDescription('');
         setIsOpen(false);
+        router.refresh();
     };
 
     return (

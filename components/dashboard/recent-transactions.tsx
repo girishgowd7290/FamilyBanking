@@ -1,13 +1,18 @@
 "use client"
 
-import { useFinanceStore } from '@/hooks/use-finance-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { ArrowDownRight, ArrowUpRight, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Transaction } from '@/types';
+import { deleteTransaction } from '@/app/actions';
 
-export function RecentTransactions() {
-    const { transactions, deleteTransaction } = useFinanceStore();
+interface RecentTransactionsProps {
+    transactions: Transaction[];
+}
+
+export function RecentTransactions({ transactions }: RecentTransactionsProps) {
+    // const { transactions, deleteTransaction } = useFinanceStore(); // Removed
 
     const sortedTransactions = [...transactions].sort((a, b) => b.date.getTime() - a.date.getTime());
 
@@ -27,7 +32,7 @@ export function RecentTransactions() {
                             className="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors group"
                         >
                             <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-full ${t.type === 'income' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                <div className={`p - 2 rounded - full ${t.type === 'income' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} `}>
                                     {t.type === 'income' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                                 </div>
                                 <div>
@@ -36,7 +41,7 @@ export function RecentTransactions() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className={`font-bold ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                <span className={`font - bold ${t.type === 'income' ? 'text-green-600' : 'text-red-600'} `}>
                                     {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
                                 </span>
                                 <Button

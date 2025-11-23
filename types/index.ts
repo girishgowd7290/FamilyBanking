@@ -15,9 +15,10 @@ export interface Transaction {
     id: string;
     date: Date;
     amount: number;
-    type: TransactionType;
-    category: Category;
+    type: string;
+    category: string;
     description: string;
+    createdAt?: Date;
 }
 
 export interface Todo {
@@ -26,6 +27,7 @@ export interface Todo {
     amount?: number;
     dueDate?: Date;
     completed: boolean;
+    createdAt?: Date;
 }
 
 export const CATEGORIES: Category[] = [

@@ -1,24 +1,53 @@
 "use client"
 
 import { useState } from 'react';
-import { useFinanceStore } from '@/hooks/use-finance-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trash2, ListTodo, Plus } from 'lucide-react';
+import { Todo } from '@/types';
+import { addTodo, toggleTodo, deleteTodo } from '@/app/actions';
+import { useRouter } from 'next/navigation';
 
-export function TodoList() {
-    const { todos, addTodo, toggleTodo, deleteTodo } = useFinanceStore();
+interface TodoListProps {
+    initialTodos: Todo[];
+}
+
+export function TodoList({ initialTodos }: TodoListProps) {
+    const [todos, setTodos] = useState<Todo[]>(initialTodos);
     const [newTodo, setNewTodo] = useState('');
+    const router = useRouter();
 
-    const handleAdd = (e: React.FormEvent) => {
+    const handleAdd = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newTodo.trim()) return;
-        addTodo({
-            title: newTodo,
-        });
+
+        // Optimistic update
+        const tempId = crypto.randomUUID();
+        const tempTodo: Todo = { id: tempId, title: newTodo, completed: false };
+        setTodos(prev => [tempTodo, ...prev]);
         setNewTodo('');
+
+        try {
+            await addTodo({ title: newTodo });
+            router.refresh();
+        } catch (error) {
+            // Revert on error (simplified)
+            setTodos(prev => prev.filter(t => t.id !== tempId));
+        }
+    };
+
+    const handleToggle = async (id: string, completed: boolean) => {
+        setTodos(prev => prev.map(t => t.id === id ? { ...t, completed } : t));
+        await toggleTodo(id, completed);
+        router.refresh();
+    };
+
+    const handleDelete = async (id: string) => {
+        setTodos(prev => prev.filter(t => t.id !== id));
+        await deleteTodo(id);
+        router.refresh();
     };
 
     return (
@@ -53,7 +82,7 @@ export function TodoList() {
                         >
                             <Checkbox
                                 checked={todo.completed}
-                                onCheckedChange={() => toggleTodo(todo.id)}
+                                onCheckedChange={() => handleToggle(todo.id, !todo.completed)}
                             />
                             <span className={`flex-1 ${todo.completed ? 'line-through text-muted-foreground' : ''}`}>
                                 {todo.title}
